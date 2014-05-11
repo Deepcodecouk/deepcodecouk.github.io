@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Blogging | deepcode.co.uk]]></title>
+  <link href="http://deepcodecouk.github.io/blog/categories/blogging/atom.xml" rel="self"/>
+  <link href="http://deepcodecouk.github.io/"/>
+  <updated>2014-05-11T19:53:42+01:00</updated>
+  <id>http://deepcodecouk.github.io/</id>
+  <author>
+    <name><![CDATA[Tony Johnson]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Moving My Blog to Github Pages]]></title>
+    <link href="http://deepcodecouk.github.io/blog/2014/05/11/Moving-my-blog-to-github-pages/"/>
+    <updated>2014-05-11T18:23:38+01:00</updated>
+    <id>http://deepcodecouk.github.io/blog/2014/05/11/Moving-my-blog-to-github-pages</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been hosting my blog at blogger.com for a long time now, but it all feels a bit &ldquo;old&rdquo; hat. I think one of the reasons I don&rsquo;t blog so much now is, whilst live writer is cool an'all, it&rsquo;s all a bit too word-like.</p>
+
+<p>When I write blog articles for work, I seem to churn them out faster than I do for my own blog, so why? I think it&rsquo;s the workflow &ndash; I just fire up sublime, write a load of stuff and then send it to our chap who makes it look pretty. Working in a pure text editor, I don&rsquo;t seem to faff around with style and formatting, I just get on with a bit of content.</p>
+
+<p>I&rsquo;m also not keen on the fact that my articles, on blogger, aren&rsquo;t so portable. I can&rsquo;t decide tomorrow to just move to something else? Ideally I want all my posts in markdown format that I can just take wherever I like, whenever I like.</p>
+
+<p>I read <a href="http://haacked.com/archive/2013/12/02/dr-jekyll-and-mr-haack/">this article from Phil Haack</a> about moving to github pages using <a href="http://www.octopress.com">OctoPress</a> and decided I&rsquo;d give it a shot.</p>
+
+<p>If you&rsquo;re reading this, it worked! :)</p>
+
+<h2>Step 1 &ndash; Let&rsquo;s get <a href="http://chocolatey.org">chocolatey</a>.</h2>
+
+<p>First thing I need is Ruby. I have this on my Mac and on my linux VMs, but I&rsquo;ve never even thought about playing with Ruby on my primary laptop running windows. I&rsquo;ve also been looking for an excuse to try out chocolatey package manager.</p>
+
+<p>I installed chocolatey from powershell &ndash; like this;</p>
+
+<p><code>powershell
+iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))
+</code></p>
+
+<h2>Step 2 &ndash; get ruby</h2>
+
+<p>Octopress needs ruby. Now I&rsquo;ve got chocolatey installed, that&rsquo;s a breeze:</p>
+
+<p><code>powershell
+cinst ruby
+</code></p>
+
+<p>Done&hellip;.</p>
+
+<h2>Step 3 &ndash; get octopress</h2>
+
+<p>Pretty straight forward (I already had git by the way) &ndash; from the octopress docs;</p>
+
+<p>``` powershell
+git clone git://github.com/imathis/octopress.git octopress
+cd octopress</p>
+
+<p>gem install bundler
+bundle install
+rake install
+```</p>
+
+<p>Ah piddle &ndash; we got an error at the bundle install part&hellip;.</p>
+
+<h2>Step 3a &ndash; fix the problem with bundle install</h2>
+
+<p>Not as straight forward as I hoped. When I ran the bundle install command I got an error;</p>
+
+<blockquote><p>Gem::InstallError: The &lsquo;RedCloth&rsquo; native gem requires installed build tools.</p>
+
+<p>Please update your PATH to include build tools or download the DevKit from &lsquo;<a href="http://rubyinstaller.org/downloads">http://rubyinstaller.org/downloads</a>&rsquo; and follow the instructions at &lsquo;<a href="http://github.com/oneclick/rubyinstaller/wiki/Development-Kit">http://github.com/oneclick/rubyinstaller/wiki/Development-Kit</a>&rsquo; An error occurred while installing RedCloth (4.2.9), and Bundler cannot continue. Make sure that <code>gem install RedCloth -v '4.2.9'</code> succeeds before bundling.</p></blockquote>
+
+<p>Ok, what now. I&rsquo;ll save you reading an hour worth of me going back and forth with chocolatey and the ruby devkit package &ndash; basically on the chocolatey gallery, the devkit is for ruby 1.8 and 1.9, but we&rsquo;re using 2.0. The quick answer is to go and download the 64bit ruby dev kit manually and unpack it somewhere.</p>
+
+<p>Then, from that directory, run;</p>
+
+<p><code>powershell
+ruby dk.rb init
+</code></p>
+
+<p>Then edit the generated config.yml to add the path to ruby 2.0 &ndash; for me that&rsquo;s in C:\Ruby200. Next, run:</p>
+
+<p><code>powershell
+ruby dk.rb install
+</code>
+And the problem is solved.</p>
+
+<h2>Step 3b &ndash; the error about rake versions</h2>
+
+<p>I got an error running &ldquo;rake install&rdquo; &ndash; seems the one installed with ruby 2 is 0.9.6, the gem file for octopress installs 0.9.2.2, but if you run rake on the command line, it&rsquo;ll use the 0.9.6 version. Each fix to this is to run it through the bundler command;</p>
+
+<p><code>powershell
+bundle exec rake install
+</code></p>
+
+<h2>Step 4 &ndash; generate and preview the site</h2>
+
+<p>Now we can take a look at how our blog looks;</p>
+
+<p><code>powershell
+bundle exec rake generate
+bundle exec rake preview
+</code></p>
+
+<p>Browsing to <a href="http://localhost:4000">http://localhost:4000</a> then shows your, rather empty blog.</p>
+
+<h2>Step 5 &ndash; getting some content in</h2>
+
+<p>You simply drop a .markdown file into /source/_posts/ following the formatting information found on the octopress site. You can then run the generate and preview commands to view your content.</p>
+
+<h2>Interesting stuff</h2>
+
+<p>Install python. If you use any code blocks, your site will just start generating as empty html&hellip;. this confused the hell out of me until I saw
+<a href="http://stackoverflow.com/questions/11804471/octopress-generating-blank-files">this post on stack overflow</a> &ndash; Again, you can use chocolatey to get python going.</p>
+
+<p>Note &ndash; pygments (syntax highlighting) requires python, but don&rsquo;t just install the latest one &ndash; install python 2.7.6 instead, otherwise, bluntly &ndash; it just won&rsquo;t work&hellip;.</p>
+
+<p><code>powershell
+cinst python -Version 2.7.6
+</code>
+When you&rsquo;re running the preview &ndash; you don&rsquo;t have to keep re-generating &ndash; it does it for you.</p>
+
+<h2>Next</h2>
+
+<p>Next time I&rsquo;ll start looking at how to get this published on github pages, check it into my repo and also work out what to do with all my content that is on blogger!</p>
+]]></content>
+  </entry>
+  
+</feed>
