@@ -5,6 +5,9 @@ date: 2014-05-18 11:10:15 +0100
 comments: true
 categories: blogging
 ---
+
+Here is a [link]({% my_post 2014-05-11-Moving-my-blog-to-github-pages %}) 
+
 As I mentioned in my previous post, I've decided to move my blog to github pages and use octopress. The idea being, I want to write my posts quickly, in markdown, and I want them to be portable.
 
 In the first post, I described getting octopress up and running for the first time, and a few little problems encountered along the way. In this post I'm going to talk about getting the thing published on github.
