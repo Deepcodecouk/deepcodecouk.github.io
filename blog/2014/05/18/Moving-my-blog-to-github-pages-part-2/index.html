@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Moving My Blog to Github Pages - Part 2 - deepcode.co.uk</title>
+  <meta name="author" content="Tony Johnson">
+
+  
+  <meta name="description" content="As I mentioned in my previous post, I&rsquo;ve decided to move my blog to github pages and use octopress. The idea being, I want to write my posts &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-part-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="deepcode.co.uk" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">deepcode.co.uk</a></h1>
+  
+    <h2>throw new ArgumentException</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:deepcodecouk.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Moving My Blog to Github Pages - Part 2</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-18T11:10:15+01:00" pubdate data-updated="true">May 18<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>As I mentioned in my previous post, I&rsquo;ve decided to move my blog to github pages and use octopress. The idea being, I want to write my posts quickly, in markdown, and I want them to be portable.</p>
+
+<p>In the first post, I described getting octopress up and running for the first time, and a few little problems encountered along the way. In this post I&rsquo;m going to talk about getting the thing published on github.</p>
+
+<h2>Step 1 &ndash; getting your repo ready</h2>
+
+<p>Assuming of course you did the same as me and cloned the octopress repository, your code presently doesn&rsquo;t push to your github pages repo. This is nice&#8217;n&#8217;easy though!</p>
+
+<p>Just run;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">bundle</span> <span class="n">exec</span> <span class="n">rake</span> <span class="n">setup_github_pages</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It will ask you for some details about your github repo and then set things up for you. The key things it does</p>
+
+<ul>
+<li>Switch the active branch from &ldquo;master&rdquo; to &ldquo;source&rdquo;</li>
+<li>Add your github repo as the default origin remote</li>
+<li>Setup a subfolder &ldquo;_deploy&rdquo; that maps to your master branch in your repo</li>
+</ul>
+
+
+<p>You then have your main source for your blog in the &ldquo;source&rdquo; branch, your main directory, the published version of your site in the &ldquo;master&rdquo; branch, mapped to the _deploy subdirectory (which is then .gitignored in the parent folder)</p>
+
+<p>It does other stuff too, the exact detail can be found <a href="http://octopress.org/docs/deploying/github/">here</a>.</p>
+
+<h2>Step 2 &ndash; generate and publish</h2>
+
+<p>Now you can re-generate/publish the site by running;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">bundle</span> <span class="n">exec</span> <span class="n">rake</span> <span class="n">generate</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>as before, but then to actually publish your site you can run;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">bundle</span> <span class="n">exec</span> <span class="n">rake</span> <span class="n">deploy</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which will copy the generated files into the _deploy directory, add them to git, commit and push them.</p>
+
+<h2>Step 3 &ndash; don&rsquo;t forget your source!</h2>
+
+<p>Of course the last thing to do after you&rsquo;ve deployed &ndash; don&rsquo;t forget to commit and push the source!</p>
+
+<h2>Next steps</h2>
+
+<p>In the next article, I&rsquo;ll look at getting all my existing content out of blogger, into markdown format and ready to re-publish. I&rsquo;ll also think about how to keep my old URLs so any google love still comes my way and consider pulling things like images down from blogger too&hellip; we&rsquo;ll see.</p>
+
+<p>Cheerio!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Tony Johnson</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-18T11:10:15+01:00" pubdate data-updated="true">May 18<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/blogging/'>blogging</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-part-2/" data-via="deepcodecouk" data-counturl="http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-part-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/11/Moving-my-blog-to-github-pages/" title="Previous Post: Moving my blog to github pages">&laquo; Moving my blog to github pages</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/05/18/Moving-my-blog-to-github-pages-part-3/" title="Next Post: Moving my blog to github pages - part 3">Moving my blog to github pages - part 3 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/05/20/Deploying_A_Static_Site_With_MsDeploy_Using_TFS_Team_Build/">Deploying a Static Site With MsDeploy Using TFS Team Build</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/18/Moving-my-blog-to-github-pages-series/">Moving My Blog to Github Pages - Articles</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/18/Moving-my-blog-to-github-pages-part-3/">Moving My Blog to Github Pages - Part 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/18/Moving-my-blog-to-github-pages-part-2/">Moving My Blog to Github Pages - Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/Moving-my-blog-to-github-pages/">Moving My Blog to Github Pages</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Tony Johnson -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

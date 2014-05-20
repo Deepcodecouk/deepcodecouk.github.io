@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Blogging | deepcode.co.uk]]></title>
   <link href="http://deepcodecouk.github.io/blog/categories/blogging/atom.xml" rel="self"/>
   <link href="http://deepcodecouk.github.io/"/>
-  <updated>2014-05-11T19:53:42+01:00</updated>
+  <updated>2014-05-20T15:32:33+01:00</updated>
   <id>http://deepcodecouk.github.io/</id>
   <author>
     <name><![CDATA[Tony Johnson]]></name>
@@ -12,6 +12,96 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Moving My Blog to Github Pages - Articles]]></title>
+    <link href="http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-series/"/>
+    <updated>2014-05-18T15:20:15+01:00</updated>
+    <id>http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-series</id>
+    <content type="html"><![CDATA[<ol>
+<li>Getting octopress running</li>
+<li>Publishing on github pages</li>
+<li>Converting existing blogger.com content</li>
+<li>Pulling in the images</li>
+<li>Preserving old blogger.com urls</li>
+<li>Styling and look n feel</li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Moving My Blog to Github Pages - Part 3]]></title>
+    <link href="http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-part-3/"/>
+    <updated>2014-05-18T15:20:15+01:00</updated>
+    <id>http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-part-3</id>
+    <content type="html"><![CDATA[<p>As I mentioned in my previous posts, I&rsquo;ve decided to move my blog to github pages and use octopress.</p>
+
+<p>Now that we&rsquo;ve got octopress running, can author new content, and can get it published to github, this third post turns attention to converting all my existing blog content that is currently hosted on blogger.com. It&rsquo;s not a massive blog, with only 115 or so posts, but still, some of them are quite lengthy and I want to pull them all down and convert them to markdown without having to cut/paste them all or, god forbid, re-create them.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Moving My Blog to Github Pages - Part 2]]></title>
+    <link href="http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-part-2/"/>
+    <updated>2014-05-18T11:10:15+01:00</updated>
+    <id>http://deepcodecouk.github.io/blog/2014/05/18/Moving-my-blog-to-github-pages-part-2</id>
+    <content type="html"><![CDATA[<p>Here is a <a href="{%%20post_url%202014-05-11-Moving-my-blog-to-github-pages%20%}">link</a></p>
+
+<p>As I mentioned in my previous post, I&rsquo;ve decided to move my blog to github pages and use octopress. The idea being, I want to write my posts quickly, in markdown, and I want them to be portable.</p>
+
+<p>In the first post, I described getting octopress up and running for the first time, and a few little problems encountered along the way. In this post I&rsquo;m going to talk about getting the thing published on github.</p>
+
+<h2>Step 1 &ndash; getting your repo ready</h2>
+
+<p>Assuming of course you did the same as me and cloned the octopress repository, your code presently doesn&rsquo;t push to your github pages repo. This is nice'n'easy though!</p>
+
+<p>Just run;</p>
+
+<p><code>powershell
+bundle exec rake setup_github_pages
+</code></p>
+
+<p>It will ask you for some details about your github repo and then set things up for you. The key things it does</p>
+
+<ul>
+<li>Switch the active branch from &ldquo;master&rdquo; to &ldquo;source&rdquo;</li>
+<li>Add your github repo as the default origin remote</li>
+<li>Setup a subfolder &ldquo;_deploy&rdquo; that maps to your master branch in your repo</li>
+</ul>
+
+
+<p>You then have your main source for your blog in the &ldquo;source&rdquo; branch, your main directory, the published version of your site in the &ldquo;master&rdquo; branch, mapped to the _deploy subdirectory (which is then .gitignored in the parent folder)</p>
+
+<p>It does other stuff too, the exact detail can be found <a href="http://octopress.org/docs/deploying/github/">here</a>.</p>
+
+<h2>Step 2 &ndash; generate and publish</h2>
+
+<p>Now you can re-generate/publish the site by running;</p>
+
+<p><code>powershell
+bundle exec rake generate
+</code></p>
+
+<p>as before, but then to actually publish your site you can run;</p>
+
+<p><code>powershell
+bundle exec rake deploy
+</code></p>
+
+<p>Which will copy the generated files into the _deploy directory, add them to git, commit and push them.</p>
+
+<h2>Step 3 &ndash; don&rsquo;t forget your source!</h2>
+
+<p>Of course the last thing to do after you&rsquo;ve deployed &ndash; don&rsquo;t forget to commit and push the source!</p>
+
+<h2>Next steps</h2>
+
+<p>In the next article, I&rsquo;ll look at getting all my existing content out of blogger, into markdown format and ready to re-publish. I&rsquo;ll also think about how to keep my old URLs so any google love still comes my way and consider pulling things like images down from blogger too&hellip; we&rsquo;ll see.</p>
+
+<p>Cheerio!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Moving My Blog to Github Pages]]></title>

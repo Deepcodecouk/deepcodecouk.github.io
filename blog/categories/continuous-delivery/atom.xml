@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Continuous-delivery | deepcode.co.uk]]></title>
+  <link href="http://deepcodecouk.github.io/blog/categories/continuous-delivery/atom.xml" rel="self"/>
+  <link href="http://deepcodecouk.github.io/"/>
+  <updated>2014-05-20T15:32:33+01:00</updated>
+  <id>http://deepcodecouk.github.io/</id>
+  <author>
+    <name><![CDATA[Tony Johnson]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Deploying a Static Site With MsDeploy Using TFS Team Build]]></title>
+    <link href="http://deepcodecouk.github.io/blog/2014/05/20/Deploying_A_Static_Site_With_MsDeploy_Using_TFS_Team_Build/"/>
+    <updated>2014-05-20T14:04:00+01:00</updated>
+    <id>http://deepcodecouk.github.io/blog/2014/05/20/Deploying_A_Static_Site_With_MsDeploy_Using_TFS_Team_Build</id>
+    <content type="html"><![CDATA[<p><strong>TODO</strong></p>
+
+<ul>
+<li>Install web deploy</li>
+<li>Add DWORD key named WindowsAuthenticationEnabled, with a value of 1 to HKLM\SOFTWARE\Microsoft\WebManagement\Server (This lets NTLM work properly &ndash; otherwise you&rsquo;ll get 401 errors and messages in event log about password being null)</li>
+<li>Grant access to the site for the build service account</li>
+<li>Add a powershell script into your source</li>
+<li>Add a build definition triggered on each check in</li>
+<li>Add the powershell script to the build definition as a post build script</li>
+</ul>
+
+
+<p>Assumes of course you have a SLN file with a web site project in it which contains your static site.</p>
+
+<p>This will use windows auth to automatically publish using the service account which your build service is running as.</p>
+
+<p>``` powershell
+$msDeployPath = &ldquo;C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe&rdquo;
+$sourceFiles = &ldquo;..\bin_PublishedWebsites\html&rdquo;
+$targetIISSite = &ldquo;yoursite&rdquo;
+$targetWebDeployUrl = &ldquo;<a href="https://yourserver:8172/msdeploy.axd?site=">https://yourserver:8172/msdeploy.axd?site=</a>&rdquo;</p>
+
+<p>if(!(Test-Path -Path $msDeployPath))
+{</p>
+
+<pre><code>throw "Could not find msdeploy - aborted"
+break
+</code></pre>
+
+<p>}</p>
+
+<p>$sourceDir = Resolve-Path($sourceFiles)
+$destUrl = $targetWebDeployUrl + $targetIISSite</p>
+
+<p>$arguments = [string[]]@(</p>
+
+<pre><code>"-verb:sync",
+"-source:contentPath='$sourceDir'",
+"-dest:contentPath='$targetIISSite',computername='$destUrl',AuthType='ntlm'",
+"-allowUntrusted:true"
+)
+</code></pre>
+
+<p>Start-Process $msDeployPath -ArgumentList $arguments -NoNewWindow -Wait
+```</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Deploying a Static Site With MsDeploy Using TFS Team Build - deepcode.co.uk</title>
+  <meta name="author" content="Tony Johnson">
+
+  
+  <meta name="description" content="TODO Install web deploy
+Add DWORD key named WindowsAuthenticationEnabled, with a value of 1 to HKLM\SOFTWARE\Microsoft\WebManagement\Server (This &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://deepcodecouk.github.io/blog/2014/05/20/Deploying_A_Static_Site_With_MsDeploy_Using_TFS_Team_Build">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="deepcode.co.uk" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">deepcode.co.uk</a></h1>
+  
+    <h2>throw new ArgumentException</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:deepcodecouk.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Deploying a Static Site With MsDeploy Using TFS Team Build</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-20T14:04:00+01:00" pubdate data-updated="true">May 20<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong>TODO</strong></p>
+
+<ul>
+<li>Install web deploy</li>
+<li>Add DWORD key named WindowsAuthenticationEnabled, with a value of 1 to HKLM\SOFTWARE\Microsoft\WebManagement\Server (This lets NTLM work properly &ndash; otherwise you&rsquo;ll get 401 errors and messages in event log about password being null)</li>
+<li>Grant access to the site for the build service account</li>
+<li>Add a powershell script into your source</li>
+<li>Add a build definition triggered on each check in</li>
+<li>Add the powershell script to the build definition as a post build script</li>
+</ul>
+
+
+<p>Assumes of course you have a SLN file with a web site project in it which contains your static site.</p>
+
+<p>This will use windows auth to automatically publish using the service account which your build service is running as.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="nv">$msDeployPath</span> <span class="p">=</span> <span class="s2">&quot;C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe&quot;</span>
+</span><span class='line'><span class="nv">$sourceFiles</span> <span class="p">=</span> <span class="s2">&quot;..\bin\_PublishedWebsites\html&quot;</span>
+</span><span class='line'><span class="nv">$targetIISSite</span> <span class="p">=</span> <span class="s2">&quot;yoursite&quot;</span>
+</span><span class='line'><span class="nv">$targetWebDeployUrl</span> <span class="p">=</span> <span class="s2">&quot;https://yourserver:8172/msdeploy.axd?site=&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span><span class="p">(!(</span><span class="nb">Test-Path</span> <span class="n">-Path</span> <span class="nv">$msDeployPath</span><span class="p">))</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">throw</span> <span class="s2">&quot;Could not find msdeploy - aborted&quot;</span>
+</span><span class='line'>    <span class="k">break</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$sourceDir</span> <span class="p">=</span> <span class="nb">Resolve-Path</span><span class="p">(</span><span class="nv">$sourceFiles</span><span class="p">)</span>
+</span><span class='line'><span class="nv">$destUrl</span> <span class="p">=</span> <span class="nv">$targetWebDeployUrl</span> <span class="p">+</span> <span class="nv">$targetIISSite</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">$arguments</span> <span class="p">=</span> <span class="no">[string[]]</span><span class="err">@</span><span class="p">(</span>
+</span><span class='line'>    <span class="s2">&quot;-verb:sync&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;-source:contentPath=&#39;$sourceDir&#39;&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;-dest:contentPath=&#39;$targetIISSite&#39;,computername=&#39;$destUrl&#39;,AuthType=&#39;ntlm&#39;&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s2">&quot;-allowUntrusted:true&quot;</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">Start-Process</span> <span class="nv">$msDeployPath</span> <span class="n">-ArgumentList</span> <span class="nv">$arguments</span> <span class="n">-NoNewWindow</span> <span class="n">-Wait</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Tony Johnson</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-20T14:04:00+01:00" pubdate data-updated="true">May 20<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/continuous-delivery/'>continuous-delivery</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://deepcodecouk.github.io/blog/2014/05/20/Deploying_A_Static_Site_With_MsDeploy_Using_TFS_Team_Build/" data-via="deepcodecouk" data-counturl="http://deepcodecouk.github.io/blog/2014/05/20/Deploying_A_Static_Site_With_MsDeploy_Using_TFS_Team_Build/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/18/Moving-my-blog-to-github-pages-series/" title="Previous Post: Moving my blog to github pages - articles">&laquo; Moving my blog to github pages - articles</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/05/20/Deploying_A_Static_Site_With_MsDeploy_Using_TFS_Team_Build/">Deploying a Static Site With MsDeploy Using TFS Team Build</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/18/Moving-my-blog-to-github-pages-series/">Moving My Blog to Github Pages - Articles</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/18/Moving-my-blog-to-github-pages-part-3/">Moving My Blog to Github Pages - Part 3</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/18/Moving-my-blog-to-github-pages-part-2/">Moving My Blog to Github Pages - Part 2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/11/Moving-my-blog-to-github-pages/">Moving My Blog to Github Pages</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Tony Johnson -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
