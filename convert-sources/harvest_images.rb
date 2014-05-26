@@ -3,6 +3,8 @@ require "rexml/document"
 require "FileUtils"
 require "nokogiri"
 require "URI"
+require "open-uri"
+require "colorize"
 
 class BlogImage
 	@@imageno = 1
@@ -35,7 +37,7 @@ class BlogImage
     end
 
     def localFull
-    	@folder + "/" + @local
+    	"harvested_images/" + @folder + "/" + @local
     end
 
 end
@@ -44,6 +46,11 @@ def reset_dir(pathname)
 	puts "    Deleting and recreating #{pathname} folder"
 	FileUtils.rm_rf(pathname) unless not Dir.exist?(pathname)
 	Dir.mkdir(pathname)
+end
+
+def create_image_dir(folderName)
+	fullFolder = "harvested_images/" + folderName
+	FileUtils.mkdir(fullFolder) unless Dir.exist?(fullFolder)
 end
 
 # Delete and recreate working folders
@@ -76,12 +83,28 @@ atom.elements.each('/feed/entry') do |entry|
 
 			trackImage = BlogImage.new( i['src'], postFolder)
 
-			images << trackImage unless images.include?(trackImage)
+			if not images.include?(trackImage)
+				images << trackImage
 
+				create_image_dir postFolder
+
+				puts "> Downloading #{trackImage.original} to #{trackImage.localFull}"
+				begin
+					open(trackImage.original) do | f |
+						File.open(trackImage.localFull, "wb") do | localFile |
+							localFile.puts f.read
+						end
+					end
+				rescue OpenURI::HTTPError => e
+  					if e.message == '404 Not Found'
+    					# handle 404 error
+    					puts "     404 not found".red
+					else
+						raise e
+					end
+				end
+			end
 		end
-		
-
-
 	end
 end
 images.sort! { |a,b| a.localFull <=> b.localFull }
