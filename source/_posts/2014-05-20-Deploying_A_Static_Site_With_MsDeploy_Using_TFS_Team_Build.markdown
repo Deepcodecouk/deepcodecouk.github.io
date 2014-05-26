@@ -7,6 +7,7 @@ categories: continuous-delivery
 ---
 
 **TODO**
+Test push from mac
 
 * Install web deploy
 * Add DWORD key named WindowsAuthenticationEnabled, with a value of 1 to HKLM\SOFTWARE\Microsoft\WebManagement\Server (This lets NTLM work properly - otherwise you'll get 401 errors and messages in event log about password being null)
