@@ -7,6 +7,7 @@ require "open-uri"
 require "colorize"
 
 class BlogImage
+	
 	@@imageno = 1
 	attr_accessor :original, :local, :folder
 
